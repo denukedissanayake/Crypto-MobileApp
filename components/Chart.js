@@ -190,11 +190,15 @@ const Chart = ({ contsinerStyle, chartPrices }) => {
                         </ChartDot>
                     </ChartPathProvider>
                     :
-                    <Text
+                    <View
                         style={{
-                            color: COLORS.white
-                     }}
-                    />
+                            color: COLORS.white,
+                            justifyContent: 'center',
+                            alignItems: 'center'
+                        }}
+                    >
+                        <Text>Chart</Text>
+                    </View>
             }
         </View>
     )
