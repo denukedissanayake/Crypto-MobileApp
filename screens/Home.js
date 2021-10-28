@@ -12,7 +12,7 @@ import { useFocusEffect } from '@react-navigation/native'
 import { MainLayout } from './';
 import { SIZES, COLORS, FONTS, dummyData, icons } from '../constants'
 
-import { BalanceInfo } from '../components'
+import { BalanceInfo, IconTextButton, Chart } from '../components'
 
 const Home = ({ getHoldings, getCoinMarkets, myHoldings, coins }) => {
     
@@ -20,8 +20,15 @@ const Home = ({ getHoldings, getCoinMarkets, myHoldings, coins }) => {
         React.useCallback(() => {
             getHoldings(holdings = dummyData.holdings)
             getCoinMarkets()
-        },[],)
+            // console.log(coins[0]?.sparkline_in_7d?.price)
+        }, [])
     )
+
+    let totalWallet = myHoldings.reduce((a, b) => a + (b.total || 0), 0)
+    
+    let valueChange = myHoldings.reduce((a, b) => a + (b.holding_value_change_7d || 0), 0)
+    
+    let perChange = valueChange / (totalWallet - valueChange) * 100
 
     function renderWaletInfoSection() {
         return (
@@ -35,12 +42,45 @@ const Home = ({ getHoldings, getCoinMarkets, myHoldings, coins }) => {
             >
                 <BalanceInfo
                     title="Your Wallet"
-                    displayAmount="45,000"
-                    changePct={2.30}
+                    displayAmount={totalWallet}
+                    changePct={perChange}
                     containerStyle={{
                         margingTop: 50
                     }}
                 />
+                <View
+                    style={{
+                        flexDirection: 'row',
+                        paddingTop: 15,
+                        margingTop: 50,
+                        marginBottom: 25,
+                        paddingHarizontal :SIZES.radius
+                    }}
+                >
+                    <IconTextButton
+                        label='Transfer'
+                        icon={icons.send}
+                        containerStyle={{
+                            flex: 1,
+                            height: 40,
+                            marginRight: SIZES.radius,
+                            marginLeft: SIZES.radius,
+                        }}
+                        onPress={()=>console.log('Pressed')}
+                    />
+
+                    <IconTextButton
+                        label='Withdraw'
+                        icon={icons.Withdraw}
+                        containerStyle={{
+                            flex: 1,
+                            height: 40,
+                            marginRight: SIZES.radius,
+                            marginLeft: SIZES.radius,
+                        }}
+                        onPress={()=>console.log('Pressed')}
+                    />
+                </View>
             </View>
         )
     }
@@ -57,7 +97,13 @@ const Home = ({ getHoldings, getCoinMarkets, myHoldings, coins }) => {
                 {renderWaletInfoSection()}
 
                 {/* Charts */}
-
+                <Chart
+                    contsinerStyle={{
+                        margingTop: SIZES.padding * 2
+                    }}
+                    // chartPrices={coins[0]?.sparkline_in_7d?.price}
+                    chartPrices={[]}
+                />
 
                 {/* Top Crypto  */}
             </View>
@@ -67,6 +113,7 @@ const Home = ({ getHoldings, getCoinMarkets, myHoldings, coins }) => {
 
 
 function mapStateToProps(state) {
+    // console.log( state.marketReducer.myHoldings)
     return {
         myHoldings: state.marketReducer.myHoldings,
         coins : state.marketReducer.coins

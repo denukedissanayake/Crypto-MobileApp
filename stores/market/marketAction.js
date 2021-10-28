@@ -39,7 +39,7 @@ export function getHoldings(
 
         let ids = holdings.map(item => {
             return item.id
-        }).join("")
+        }).join(",")
 
         let APIURL = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=${currency}&order=${orderBy}&per_page=${perPage}&page=${page}&sparkline=${sparkline}&price_change_percentage=${priceChangePerc}&ids=${ids}`
 
@@ -52,15 +52,15 @@ export function getHoldings(
         }).then(responce => {
 
             console.log("Get Holdings")
-            // console.log(responce)
+            // console.log(responce.data)
 
             if (responce.status == 200) {
                 let myHoldings = responce.data.map(item => {
                     let coin = holdings.find(a => a.id == item.id)
                     let price7d = item.current_price / (1 + item.price_change_percentage_7d_in_currency * 0.01)
-                    
+
                     return {
-                        id: item.is,
+                        id: item.id,
                         symbol: item.symbol,
                         name: item.name,
                         image: item.image,
@@ -70,19 +70,19 @@ export function getHoldings(
                         price_change_percentage_7d_in_currency: item.price_change_percentage_7d_in_currency,
                         holding_value_change_7d: (item.current_price - price7d) * coin.qty,
                         sparkline_in_7d: {
-                            valur: item.sparkline_in_7d.map(price => {
+                            value: item.sparkline_in_7d.price.map(price => {
                                 return price * coin.qty
                             })
                         }
 
                     }
                 })
-
-                dispatch(getHoldingsSucces(myHoldings)) 
+                dispatch(getHoldingsSucces(myHoldings))
             } else {
                 dispatch(getHoldingsFaluire(responce.data))
             }
         }).catch(error => {
+            console.log(error)
             dispatch(getHoldingsFaluire(error))
         } )
     }
